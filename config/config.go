@@ -163,6 +163,7 @@ type Static struct {
 type File struct {
 	NoRouteHTMLPath string
 	RoutesPath      string
+	Interval        time.Duration
 }
 
 type Consul struct {
