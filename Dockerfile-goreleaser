@@ -1,6 +1,14 @@
-FROM alpine:3.16
-RUN apk update && apk add --no-cache ca-certificates
-COPY fabio /usr/bin
+FROM golang:alpine AS build
+
+RUN apk update && apk add --no-cache git ca-certificates libcap
+WORKDIR /src
+COPY . .
+RUN CGO_ENABLED=0 go build -trimpath -ldflags "-s -w" -o /fabio
+RUN setcap CAP_NET_BIND_SERVICE=+eip /fabio
+
+FROM scratch
+COPY --from=build /etc/ssl/certs/ca-certificates.crt /etc/ssl/certs/ca-certificates.crt
+COPY --from=build /fabio /usr/bin/
 ADD fabio.properties /etc/fabio/fabio.properties
 EXPOSE 9998 9999
 ENTRYPOINT ["/usr/bin/fabio"]
