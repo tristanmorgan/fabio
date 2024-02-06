@@ -24,10 +24,10 @@ require (
 	github.com/rogpeppe/fastuuid v1.2.0
 	github.com/sergi/go-diff v1.2.0
 	github.com/tg123/go-htpasswd v1.0.0
-	golang.org/x/net v0.0.0-20220225172249-27dd8689420f
-	golang.org/x/sync v0.0.0-20210220032951-036812b2e83c
-	google.golang.org/grpc v1.50.1
-	google.golang.org/protobuf v1.28.1
+	golang.org/x/net v0.12.0
+	golang.org/x/sync v0.3.0
+	google.golang.org/grpc v1.58.3
+	google.golang.org/protobuf v1.31.0
 )
 
 require (
@@ -37,7 +37,7 @@ require (
 	github.com/apache/thrift v0.13.0 // indirect
 	github.com/armon/go-metrics v0.3.10 // indirect
 	github.com/beorn7/perks v1.0.1 // indirect
-	github.com/cespare/xxhash/v2 v2.1.2 // indirect
+	github.com/cespare/xxhash/v2 v2.2.0 // indirect
 	github.com/circonus-labs/circonusllhist v0.1.4 // indirect
 	github.com/circonus-labs/go-apiclient v0.7.9 // indirect
 	github.com/davecgh/go-spew v1.1.1 // indirect
@@ -51,7 +51,7 @@ require (
 	github.com/fsnotify/fsnotify v1.5.1 // indirect
 	github.com/go-logfmt/logfmt v0.5.0 // indirect
 	github.com/gogo/protobuf v1.1.1 // indirect
-	github.com/golang/protobuf v1.5.2 // indirect
+	github.com/golang/protobuf v1.5.3 // indirect
 	github.com/golang/snappy v0.0.1 // indirect
 	github.com/google/uuid v1.3.0 // indirect
 	github.com/hashicorp/errwrap v1.1.0 // indirect
@@ -89,11 +89,11 @@ require (
 	github.com/tv42/httpunix v0.0.0-20191220191345-2ba4b9c3382c // indirect
 	github.com/vishvananda/netlink v1.1.1-0.20210330154013-f5de75959ad5 // indirect
 	github.com/vishvananda/netns v0.0.0-20200728191858-db3c7e526aae // indirect
-	golang.org/x/crypto v0.0.0-20210817164053-32db794688a5 // indirect
-	golang.org/x/sys v0.0.0-20220406163625-3f8b81556e12 // indirect
-	golang.org/x/text v0.3.7 // indirect
+	golang.org/x/crypto v0.11.0 // indirect
+	golang.org/x/sys v0.10.0 // indirect
+	golang.org/x/text v0.11.0 // indirect
 	golang.org/x/time v0.0.0-20200630173020-3af7569d3a1e // indirect
-	google.golang.org/genproto v0.0.0-20211208223120-3a66f561d7aa // indirect
+	google.golang.org/genproto/googleapis/rpc v0.0.0-20230711160842-782d3b101e98 // indirect
 	gopkg.in/ini.v1 v1.66.2 // indirect
 	gopkg.in/square/go-jose.v2 v2.5.1 // indirect
 	gopkg.in/yaml.v2 v2.4.0 // indirect
