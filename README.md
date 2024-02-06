@@ -1,3 +1,13 @@
+### Personal fork
+
+[![Docker Image](https://img.shields.io/badge/docker-tristanmorgan%2Ffabio-blue.svg)](https://hub.docker.com/r/tristanmorgan/fabio/)
+
+It seems the the Upstream of Fabio has been quiet for over a year now (Jan 2024) so I'm making my personal fork available for some of the features I wanted in. A docker Container of my flavour is available built for AMD64 and ARM64.
+
+All this said I will continue to try get changes pushed upstream where I can.
+
+
+
 <p align="center">
   <p align="center" style="width: 50%; height: 64px;">
     <img src="https://cdn.rawgit.com/fabiolb/fabio/015e999/fabio.svg" height="64"/>
