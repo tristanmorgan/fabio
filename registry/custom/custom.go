@@ -53,12 +53,14 @@ func customRoutes(cfg *config.Custom, ch chan string) {
 		}
 
 		if resp.StatusCode != 200 {
+			resp.Body.Close()
 			ch <- fmt.Sprintf("Error Non-200 return (%v) from  -%s", resp.StatusCode, URL)
 			time.Sleep(cfg.PollInterval)
 			continue
 		}
 		log.Printf("[DEBUG] Custom Registry begin decoding json %s \n", time.Now())
 		decoder := json.NewDecoder(resp.Body)
+		resp.Body.Close()
 		err = decoder.Decode(&Routes)
 		if err != nil {
 			ch <- fmt.Sprintf("Error decoding request - %s -%s", URL, err.Error())
