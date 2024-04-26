@@ -276,7 +276,7 @@ func lookupHostMatcher(cfg *config.Config) func(context.Context, string) bool {
 		if proto, ok = t.Opts["proto"]; !ok && t.URL != nil {
 			proto = t.URL.Scheme
 		}
-		return "tcp" == proto
+		return proto == "tcp"
 	}
 }
 

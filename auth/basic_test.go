@@ -57,7 +57,7 @@ func createBasicAuthFile(contents string) (string, error) {
 func createBasicAuth(user string, password string) (AuthScheme, error) {
 	contents := fmt.Sprintf("%s:%s", user, password)
 
-	filename, err := createBasicAuthFile(contents)
+	filename, _ := createBasicAuthFile(contents)
 
 	a, err := newBasicAuth(config.BasicAuth{
 		File:  filename,
