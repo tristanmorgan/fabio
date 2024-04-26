@@ -83,22 +83,17 @@ const (
 )
 
 type clientHelloMsg struct {
-	raw                []byte
-	vers               uint16
-	random             []byte
-	sessionId          []byte
-	cipherSuites       []uint16
-	compressionMethods []uint8
-	nextProtoNeg       bool
-	serverName         string
-	ocspStapling       bool
-	scts               bool
-	// supportedCurves              []CurveID
-	supportedPoints []uint8
-	ticketSupported bool
-	sessionTicket   []uint8
-	//signatureAndHashes           []signatureAndHash
-	secureRenegotiation          []byte
+	raw                          []byte
+	vers                         uint16
+	random                       []byte
+	sessionId                    []byte
+	compressionMethods           []uint8
+	nextProtoNeg                 bool
+	serverName                   string
+	ocspStapling                 bool
+	scts                         bool
+	ticketSupported              bool
+	sessionTicket                []uint8
 	secureRenegotiationSupported bool
 	alpnProtocols                []string
 }
