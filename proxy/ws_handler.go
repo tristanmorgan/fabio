@@ -8,6 +8,7 @@ import (
 	"net"
 	"net/http"
 	"strings"
+	"sync"
 	"sync/atomic"
 	"time"
 )
@@ -21,8 +22,10 @@ type dialFunc func(network, address string) (net.Conn, error)
 // an incoming and outgoing websocket connection. It checks whether
 // the handshake was completed successfully before forwarding data
 // between the client and server.
-func newWSHandler(host string, dial dialFunc, conn gkm.Gauge) http.Handler {
+func newWSHandler(host string, dial dialFunc, conn gkm.Gauge, connections *sync.WaitGroup) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		connections.Add(1)
+		defer connections.Done()
 		if conn != nil {
 			conn.Set(float64(atomic.AddInt64(&conns, 1)))
 			defer func() {
@@ -46,8 +49,8 @@ func newWSHandler(host string, dial dialFunc, conn gkm.Gauge) http.Handler {
 
 		out, err := dial("tcp", host)
 		if err != nil {
-			log.Printf("[ERROR] WS error for %s. %s", r.URL, err)
-			http.Error(w, "error contacting backend server", http.StatusInternalServerError)
+			log.Printf("[ERROR] WS dial error for %s. %s", r.URL, err)
+			//http.Error(w, "error contacting backend server", http.StatusInternalServerError)
 			return
 		}
 		defer out.Close()
@@ -71,7 +74,7 @@ func newWSHandler(host string, dial dialFunc, conn gkm.Gauge) http.Handler {
 		n, err := out.Read(b)
 		if err != nil {
 			log.Printf("[ERROR] Error reading handshake for %s: %s", r.URL, err)
-			http.Error(w, "error reading handshake", http.StatusInternalServerError)
+			//http.Error(w, "error reading handshake", http.StatusInternalServerError)
 			return
 		}
 

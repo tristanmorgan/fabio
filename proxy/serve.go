@@ -69,6 +69,14 @@ func Shutdown(timeout time.Duration) {
 	for _, srv := range srvs {
 		wg.Add(1)
 		go func(srv Server) {
+			s, ok := srv.(*http.Server)
+			if ok {
+				h, ok := s.Handler.(*HTTPProxy)
+				if ok {
+					log.Printf("[INFO] Waiting for websocket connections to finish")
+					h.ActiveWSConnections.Wait()
+				}
+			}
 			defer wg.Done()
 			ctx, cancel := context.WithTimeout(context.Background(), timeout)
 			defer cancel()
