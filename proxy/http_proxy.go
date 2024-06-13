@@ -205,12 +205,18 @@ func (p *HTTPProxy) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	switch {
 	case upgrade == "websocket" || upgrade == "Websocket":
 		r.URL = targetURL
+		netDialer := &net.Dialer{
+			Timeout:   p.Config.DialTimeout,
+			KeepAlive: p.Config.KeepAliveTimeout,
+		}
 		if targetURL.Scheme == "https" || targetURL.Scheme == "wss" {
-			h = newWSHandler(targetURL.Host, func(network, address string) (net.Conn, error) {
-				return tls.Dial(network, address, tr.(*http.Transport).TLSClientConfig)
-			}, p.Stats.WSConn)
+			tlsDialer := &tls.Dialer{
+				NetDialer: netDialer,
+				Config:    tr.(*http.Transport).TLSClientConfig,
+			}
+			h = newWSHandler(targetURL.Host, tlsDialer.Dial, p.Stats.WSConn)
 		} else {
-			h = newWSHandler(targetURL.Host, net.Dial, p.Stats.WSConn)
+			h = newWSHandler(targetURL.Host, netDialer.Dial, p.Stats.WSConn)
 		}
 
 	case accept == "text/event-stream":
