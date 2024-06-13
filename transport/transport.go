@@ -16,10 +16,15 @@ func NewTransport(tlscfg *tls.Config) *http.Transport {
 		ResponseHeaderTimeout: cfg.Proxy.ResponseHeaderTimeout,
 		IdleConnTimeout:       cfg.Proxy.IdleConnTimeout,
 		MaxIdleConnsPerHost:   cfg.Proxy.MaxConn,
-		Dial: (&net.Dialer{
+		TLSHandshakeTimeout:   cfg.Proxy.DialTimeout,
+		DialContext: (&net.Dialer{
 			Timeout:   cfg.Proxy.DialTimeout,
 			KeepAlive: cfg.Proxy.KeepAliveTimeout,
-		}).Dial,
+		}).DialContext,
+		DialTLSContext: (&net.Dialer{
+			Timeout:   cfg.Proxy.DialTimeout,
+			KeepAlive: cfg.Proxy.KeepAliveTimeout,
+		}).DialContext,
 		TLSClientConfig: tlscfg,
 	}
 }
