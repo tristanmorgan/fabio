@@ -11,6 +11,7 @@ import (
 	"net/url"
 	"strconv"
 	"strings"
+	"sync"
 	"time"
 
 	"github.com/fabiolb/fabio/auth"
@@ -78,6 +79,9 @@ type HTTPProxy struct {
 
 	// stats contains all of the stats bits
 	Stats HttpStatsHandler
+
+	// holds the counter of active websocket connections
+	ActiveWSConnections sync.WaitGroup
 }
 
 func (p *HTTPProxy) ServeHTTP(w http.ResponseWriter, r *http.Request) {
@@ -214,9 +218,9 @@ func (p *HTTPProxy) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 				NetDialer: netDialer,
 				Config:    tr.(*http.Transport).TLSClientConfig,
 			}
-			h = newWSHandler(targetURL.Host, tlsDialer.Dial, p.Stats.WSConn)
+			h = newWSHandler(targetURL.Host, tlsDialer.Dial, p.Stats.WSConn, &p.ActiveWSConnections)
 		} else {
-			h = newWSHandler(targetURL.Host, netDialer.Dial, p.Stats.WSConn)
+			h = newWSHandler(targetURL.Host, netDialer.Dial, p.Stats.WSConn, &p.ActiveWSConnections)
 		}
 
 	case accept == "text/event-stream":
