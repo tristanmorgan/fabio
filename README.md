@@ -1,10 +1,12 @@
 ### Personal fork
 
+Fabio is back! but I will still have a few changes in here that have not been accepted upstream yet.
+
 [![Docker Image](https://img.shields.io/badge/docker-tristanmorgan%2Ffabio-blue.svg)](https://hub.docker.com/r/tristanmorgan/fabio/)
 
-It seems the the Upstream of Fabio has been quiet for over a year now (Jan 2024) so I'm making my personal fork available for some of the features I wanted in. A docker Container of my flavour is available built for AMD64 and ARM64.
+~It seems the the Upstream of Fabio has been quiet for over a year now (Jan 2024) so I'm making my personal fork available for some of the features I wanted in. A docker Container of my flavour is available built for AMD64 and ARM64.~
 
-All this said I will continue to try get changes pushed upstream where I can.
+~All this said I will continue to try get changes pushed upstream where I can.~
 
 
 
