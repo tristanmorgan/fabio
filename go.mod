@@ -3,7 +3,6 @@ module github.com/fabiolb/fabio
 go 1.23.3
 
 require (
-	github.com/armon/go-proxyproto v0.0.0-20180202201750-5b7edb60ff5f
 	github.com/circonus-labs/circonus-gometrics/v3 v3.4.7
 	github.com/go-kit/kit v0.13.0
 	github.com/go-kit/log v0.2.1
@@ -19,6 +18,7 @@ require (
 	github.com/openzipkin-contrib/zipkin-go-opentracing v0.3.5
 	github.com/osrg/gobgp/v3 v3.34.0
 	github.com/pascaldekloe/goe v0.1.1
+	github.com/pires/go-proxyproto v0.7.0
 	github.com/pkg/profile v1.7.0
 	github.com/prometheus/client_golang v1.20.5
 	github.com/rogpeppe/fastuuid v1.2.0
