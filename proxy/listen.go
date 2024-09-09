@@ -7,7 +7,7 @@ import (
 	"net"
 	"time"
 
-	proxyproto "github.com/armon/go-proxyproto"
+	proxyproto "github.com/pires/go-proxyproto"
 )
 
 func ListenTCP(l config.Listen, cfg *tls.Config) (net.Listener, error) {
@@ -29,7 +29,7 @@ func ListenTCP(l config.Listen, cfg *tls.Config) (net.Listener, error) {
 	if l.ProxyProto {
 		ln = &proxyproto.Listener{
 			Listener:           ln,
-			ProxyHeaderTimeout: l.ProxyHeaderTimeout,
+			ReadHeaderTimeout: l.ProxyHeaderTimeout,
 		}
 	}
 

@@ -15,7 +15,7 @@ import (
 	"github.com/fabiolb/fabio/config"
 	"github.com/fabiolb/fabio/proxy/tcp"
 
-	"github.com/armon/go-proxyproto"
+	"github.com/pires/go-proxyproto"
 	"github.com/inetaf/tcpproxy"
 	"github.com/prometheus/client_golang/prometheus/promhttp"
 )
@@ -151,7 +151,7 @@ func ListenAndServeHTTPSTCPSNI(l config.Listen, h http.Handler, p tcp.Handler, c
 	if pxyProto {
 		tln = &proxyproto.Listener{
 			Listener:           tln,
-			ProxyHeaderTimeout: l.ProxyHeaderTimeout,
+			ReadHeaderTimeout: l.ProxyHeaderTimeout,
 		}
 	}
 	tps.ServeLater(tln, &tcp.Server{

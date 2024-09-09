@@ -6,7 +6,7 @@ import (
 	"net"
 	"time"
 
-	proxyproto "github.com/armon/go-proxyproto"
+	proxyproto "github.com/pires/go-proxyproto"
 	"github.com/fabiolb/fabio/proxy/internal"
 	"github.com/fabiolb/fabio/proxy/tcp"
 )
@@ -127,7 +127,7 @@ func NewUnstartedServerWithProxyProto(h tcp.Handler) *Server {
 	return &Server{
 		Listener: &proxyproto.Listener{
 			Listener:           newLocalListener(),
-			ProxyHeaderTimeout: time.Duration(100 * time.Millisecond),
+			ReadHeaderTimeout: time.Duration(100 * time.Millisecond),
 		},
 		Config: &tcp.Server{Handler: h},
 	}
