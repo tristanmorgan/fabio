@@ -451,7 +451,7 @@ func startServers(cfg *config.Config, stats metrics.Provider) {
 						ports = unique(ports)
 					}
 					for _, port := range difference(lastPorts, ports) {
-						log.Printf("[DEBUG] Dynamic TCP listener on %s eligable for termination", port)
+						log.Printf("[DEBUG] Dynamic TCP listener on %s eligible for termination", port)
 						proxy.CloseProxy(port)
 					}
 					for _, port := range ports {
