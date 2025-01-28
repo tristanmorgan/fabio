@@ -178,7 +178,6 @@ func newGrpcProxy(cfg *config.Config, tlscfg *tls.Config, statsHandler *proxy.Gr
 	handler := grpc_proxy.TransparentHandler(proxy.GetGRPCDirector(tlscfg, cfg))
 
 	return []grpc.ServerOption{
-		grpc.CustomCodec(grpc_proxy.Codec()),
 		grpc.UnknownServiceHandler(handler),
 		grpc.StreamInterceptor(proxyInterceptor.Stream),
 		grpc.StatsHandler(statsHandler),
