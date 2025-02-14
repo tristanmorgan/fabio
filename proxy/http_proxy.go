@@ -20,7 +20,6 @@ import (
 	"github.com/fabiolb/fabio/noroute"
 	"github.com/fabiolb/fabio/proxy/gzip"
 	"github.com/fabiolb/fabio/route"
-	"github.com/fabiolb/fabio/trace"
 	"github.com/fabiolb/fabio/uuid"
 )
 
@@ -67,9 +66,6 @@ type HTTPProxy struct {
 	// Logger is the access logger for the requests.
 	Logger logger.Logger
 
-	// TracerCfg is the Open Tracing configuration as provided during startup
-	TracerCfg config.Tracing
-
 	// UUID returns a unique id in uuid format.
 	// If UUID is nil, uuid.NewUUID() is used.
 	UUID func() string
@@ -96,10 +92,6 @@ func (p *HTTPProxy) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 		}
 		r.Header.Set(p.Config.RequestID, id())
 	}
-
-	//Create Span
-	span := trace.CreateSpan(r, &p.TracerCfg)
-	defer span.Finish()
 
 	t := p.Lookup(r)
 
@@ -192,9 +184,6 @@ func (p *HTTPProxy) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, "cannot add response headers", http.StatusInternalServerError)
 		return
 	}
-
-	//Add OpenTrace Headers to response
-	trace.InjectHeaders(span, r)
 
 	upgrade, accept := r.Header.Get("Upgrade"), r.Header.Get("Accept")
 
