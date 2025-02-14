@@ -21,9 +21,31 @@ run:
   allow-parallel-runners: true
   allow-serial-runners: true
 linters:
-  default: none
-  enable:
-    - asciicheck
+  default: fast
+  disable:
+    - depguard
+    - dupl
+    - dupword
+    - cyclop
+    - copyloopvar
+    - funcorder
+    - funlen
+    - gochecknoinits
+    - gocognit
+    - gocyclo
+    - godot
+    - godox
+    - lll
+    - maintidx
+    - mnd
+    - nakedret
+    - nestif
+    - nlreturn
+    - prealloc
+    - testpackage
+    - usestdlibvars
+    - whitespace
+    - wsl
   exclusions:
     generated: lax
     presets:
@@ -32,13 +54,7 @@ linters:
       - legacy
       - std-error-handling
     paths:
-      - third_party$
-      - builtin$
-      - examples$
+      - demo/*
 formatters:
   exclusions:
     generated: lax
-    paths:
-      - third_party$
-      - builtin$
-      - examples$
