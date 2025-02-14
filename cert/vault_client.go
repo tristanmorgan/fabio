@@ -16,13 +16,13 @@ import (
 // vaultClient wraps an *api.Client and takes care of token renewal
 // automatically.
 type vaultClient struct {
+	client           *api.Client
 	addr             string // overrides the default config
 	token            string // overrides the VAULT_TOKEN environment variable
 	fetchVaultToken  string
 	prevFetchedToken string
 
-	client *api.Client
-	mu     sync.Mutex
+	mu sync.Mutex
 }
 
 func NewVaultClient(fetchVaultToken string) *vaultClient {
@@ -129,10 +129,10 @@ func (c *vaultClient) keepTokenAlive() {
 
 	b, _ := json.Marshal(resp.Data)
 	var data struct {
+		ExpireTime  time.Time `json:"expire_time"`
 		TTL         int       `json:"ttl"`
 		CreationTTL int       `json:"creation_ttl"`
 		Renewable   bool      `json:"renewable"`
-		ExpireTime  time.Time `json:"expire_time"`
 	}
 	if err := json.Unmarshal(b, &data); err != nil {
 		log.Printf("[WARN] vault: lookup-self failed, token renewal is disabled: %s", err)
