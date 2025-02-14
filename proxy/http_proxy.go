@@ -42,12 +42,9 @@ type HttpStatsHandler struct {
 
 // HTTPProxy is a dynamic reverse proxy for HTTP and HTTPS protocols.
 type HTTPProxy struct {
-	// Config is the proxy configuration as provided during startup.
-	Config config.Proxy
 
-	// Time returns the current time as the number of seconds since the epoch.
-	// If Time is nil, time.Now is used.
-	Time func() time.Time
+	// stats contains all of the stats bits
+	Stats HttpStatsHandler
 
 	// Transport is the http connection pool configured with timeouts.
 	// The proxy will panic if this value is nil.
@@ -57,6 +54,10 @@ type HTTPProxy struct {
 	// InsecureSkipVerify set. This is used for https proxies with
 	// self-signed certs.
 	InsecureTransport http.RoundTripper
+
+	// Time returns the current time as the number of seconds since the epoch.
+	// If Time is nil, time.Now is used.
+	Time func() time.Time
 
 	// Lookup returns a target host for the given request.
 	// The proxy will panic if this value is nil.
@@ -72,8 +73,8 @@ type HTTPProxy struct {
 	// Auth schemes registered with the server
 	AuthSchemes map[string]auth.AuthScheme
 
-	// stats contains all of the stats bits
-	Stats HttpStatsHandler
+	// Config is the proxy configuration as provided during startup.
+	Config config.Proxy
 }
 
 func (p *HTTPProxy) ServeHTTP(w http.ResponseWriter, r *http.Request) {
@@ -176,10 +177,7 @@ func (p *HTTPProxy) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	if err := addResponseHeaders(w, r, p.Config); err != nil {
-		http.Error(w, "cannot add response headers", http.StatusInternalServerError)
-		return
-	}
+	addResponseHeaders(w, r, p.Config)
 
 	upgrade, accept := r.Header.Get("Upgrade"), r.Header.Get("Accept")
 

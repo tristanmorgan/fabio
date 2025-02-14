@@ -227,10 +227,10 @@ func (h *GrpcStatsHandler) HandleConn(ctx context.Context, conn stats.ConnStats)
 
 type grpcConnectionPool struct {
 	connections     map[string]*grpc.ClientConn
-	lock            sync.RWMutex
-	cleanupInterval time.Duration
 	tlscfg          *tls.Config
 	cfg             *config.Config
+	cleanupInterval time.Duration
+	lock            sync.RWMutex
 }
 
 func newGrpcConnectionPool(tlscfg *tls.Config, cfg *config.Config) *grpcConnectionPool {
@@ -256,10 +256,10 @@ func (p *grpcConnectionPool) Get(ctx context.Context, target *route.Target) (*gr
 		return conn, nil
 	}
 
-	return p.newConnection(ctx, target)
+	return p.newConnection(target)
 }
 
-func (p *grpcConnectionPool) newConnection(ctx context.Context, target *route.Target) (*grpc.ClientConn, error) {
+func (p *grpcConnectionPool) newConnection(target *route.Target) (*grpc.ClientConn, error) {
 	opts := []grpc.DialOption{
 		grpc.WithDefaultCallOptions(grpc.MaxCallRecvMsgSize(p.cfg.Proxy.GRPCMaxRxMsgSize)),
 	}
