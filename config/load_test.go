@@ -284,7 +284,7 @@ func TestLoad(t *testing.T) {
 			},
 		},
 		{
-			desc: "-proxy.addr with with prometheus and https",
+			desc: "-proxy.addr with prometheus and https",
 			args: []string{"-proxy.addr", ":5555;cs=name;strictmatch=true;proto=prometheus", "-proxy.cs", "cs=name;type=path;cert=foo;clientca=bar;refresh=2s;hdr=a: b;caupgcn=furb"},
 			cfg: func(cfg *Config) *Config {
 				cfg.Listen = []Listen{

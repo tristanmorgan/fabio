@@ -500,12 +500,12 @@ func BenchmarkUint16Base16(b *testing.B) {
 	// optimize the body of the loop away.
 	var s string
 	b.Run("fmt.Sprintf", func(b *testing.B) {
-		for i := 0; i < b.N; i++ {
+		for i := range b.N {
 			s = fmt.Sprintf("0x%04x", uint16(i))
 		}
 	})
 	b.Run("uint16base16", func(b *testing.B) {
-		for i := 0; i < b.N; i++ {
+		for i := range b.N {
 			s = uint16base16(uint16(i))
 		}
 	})
