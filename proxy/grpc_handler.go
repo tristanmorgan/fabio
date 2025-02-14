@@ -227,10 +227,10 @@ func (h *GrpcStatsHandler) HandleConn(ctx context.Context, conn stats.ConnStats)
 
 type grpcConnectionPool struct {
 	connections     map[string]*grpc.ClientConn
-	lock            sync.RWMutex
-	cleanupInterval time.Duration
 	tlscfg          *tls.Config
 	cfg             *config.Config
+	cleanupInterval time.Duration
+	lock            sync.RWMutex
 }
 
 func newGrpcConnectionPool(tlscfg *tls.Config, cfg *config.Config) *grpcConnectionPool {
