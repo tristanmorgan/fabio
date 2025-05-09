@@ -15,6 +15,8 @@ builds:
       - amd64
       - arm
       - arm64
+      - s390x
+      - ppc64le
     goarm:
       - 7
 archives:
@@ -69,12 +71,46 @@ dockers:
       - "--label=org.opencontainers.image.version={{.Version}}"
     extra_files:
       - fabio.properties
+  - dockerfile: Dockerfile-goreleaser
+    use: buildx
+    goos: linux
+    goarch: s390x
+    image_templates:
+      - 'fabiolb/fabio:latest-s390x'
+      - 'fabiolb/fabio:{{ .Version }}-s390x'
+    build_flag_templates:
+      - "--platform=linux/s390x"
+      - "--label=org.opencontainers.image.created={{.Date}}"
+      - "--label=org.opencontainers.image.title={{.ProjectName}}"
+      - "--label=org.opencontainers.image.revision={{.FullCommit}}"
+      - "--label=org.opencontainers.image.version={{.Version}}"
+    extra_files:
+      - fabio.properties
+  - dockerfile: Dockerfile-goreleaser
+    use: buildx
+    goos: linux
+    goarch: ppc64le
+    image_templates:
+      - 'fabiolb/fabio:latest-ppc64le'
+      - 'fabiolb/fabio:{{ .Version }}-ppc64le'
+    build_flag_templates:
+      - "--platform=linux/amd64"
+      - "--label=org.opencontainers.image.created={{.Date}}"
+      - "--label=org.opencontainers.image.title={{.ProjectName}}"
+      - "--label=org.opencontainers.image.revision={{.FullCommit}}"
+      - "--label=org.opencontainers.image.version={{.Version}}"
+    extra_files:
+      - fabio.properties
 docker_manifests:
   - name_template: 'fabiolb/fabio:latest'
     image_templates:
       - 'fabiolb/fabio:latest-amd64'
       - 'fabiolb/fabio:latest-arm64v8'
+      - 'fabiolb/fabio:latest-s390x'
+      - 'fabiolb/fabio:latest-ppc64le'
   - name_template: 'fabiolb/fabio:{{ .Version }}'
     image_templates:
       - 'fabiolb/fabio:{{ .Version }}-amd64'
       - 'fabiolb/fabio:{{ .Version }}-arm64v8'
+      - 'fabiolb/fabio:{{ .Version }}-s390x'
+      - 'fabiolb/fabio:{{ .Version }}-ppc64le'
