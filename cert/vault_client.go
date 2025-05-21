@@ -149,7 +149,7 @@ func (c *vaultClient) keepTokenAlive() {
 		return
 	default:
 		ttl := time.Until(data.ExpireTime)
-		ttl = ttl / time.Second * time.Second // truncate to seconds
+		ttl = ttl.Round(time.Second)
 		log.Printf("[WARN] vault: Token is not renewable and will expire %s from now at %s",
 			ttl, data.ExpireTime.Format(time.RFC3339))
 		return
