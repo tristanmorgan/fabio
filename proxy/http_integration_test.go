@@ -826,7 +826,7 @@ func BenchmarkProxyLogger(b *testing.B) {
 		Proto:      "HTTP/1.1",
 	}
 
-	for i := 0; i < b.N; i++ {
+	for range b.N {
 		proxy.ServeHTTP(httptest.NewRecorder(), req)
 	}
 }

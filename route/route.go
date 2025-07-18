@@ -306,7 +306,7 @@ func (r *Route) weighTargets() {
 		}
 
 		next, step := 0, usedSlots/s.n
-		for k := 0; k < s.n; k++ {
+		for range s.n {
 			// find the next empty slot
 			for targets[next] != nil {
 				next = (next + 1) % usedSlots
