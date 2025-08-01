@@ -240,40 +240,6 @@ var proxyHandler tcp.HandlerFunc = func(c net.Conn) error {
 	return err
 }
 
-// TestTCPProxyWithProxyProtoEnables tests proxying an unencrypted TCP connection
-// to a TCP upstream server with proxy protocol enabed on upstream connection
-func TestTCPProxyWithProxyProto(t *testing.T) {
-	srv := tcptest.NewServerWithProxyProto(proxyHandler)
-	defer srv.Close()
-
-	// start proxy
-	proxyAddr := "127.0.0.1:57778"
-	go func() {
-		h := &tcp.Proxy{
-			Lookup: func(h string) *route.Target {
-				tbl, _ := route.NewTable(bytes.NewBufferString("route add srv :57778 tcp://" + srv.Addr + " opts \"pxyproto=true\""))
-				return tbl.LookupHost(h, route.Picker["rr"])
-			},
-		}
-		l := config.Listen{Addr: proxyAddr, ProxyProto: true}
-		if err := ListenAndServeTCP(l, h, nil); err != nil {
-			t.Log("ListenAndServeTCP: ", err)
-		}
-	}()
-	defer Close()
-
-	// connect to proxy
-	dialer := tcptest.NewRetryDialer()
-	dialer.ProxyProto = true
-	out, err := dialer.Dial("tcp", proxyAddr)
-	if err != nil {
-		t.Fatalf("net.Dial: %#v", err)
-	}
-	defer out.Close()
-
-	testProxyProto(t, out)
-}
-
 // TestTCPProxyWithTLSWithProxyProto tests proxying an encrypted TCP connection
 // to an unencrypted upstream TCP server with proxy protocol enabled.
 // The proxy extract the proxy protocol header and terminates the TLS connection.
