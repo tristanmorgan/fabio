@@ -16,7 +16,7 @@ require (
 	github.com/mwitkow/grpc-proxy v0.0.0-20230212185441-f345521cb9c9
 	github.com/osrg/gobgp/v3 v3.37.0
 	github.com/pascaldekloe/goe v0.1.1
-	github.com/pires/go-proxyproto v0.10.0
+	github.com/pires/go-proxyproto v0.11.0
 	github.com/pkg/profile v1.7.0
 	github.com/prometheus/client_golang v1.23.2
 	github.com/rogpeppe/fastuuid v1.2.0
