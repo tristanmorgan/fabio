@@ -19,9 +19,9 @@ import (
 	"google.golang.org/protobuf/proto"
 	apb "google.golang.org/protobuf/types/known/anypb"
 
-	api "github.com/osrg/gobgp/v3/api"
-	bgpconfig "github.com/osrg/gobgp/v3/pkg/config"
-	"github.com/osrg/gobgp/v3/pkg/server"
+	api "github.com/osrg/gobgp/v4/api"
+	bgpconfig "github.com/osrg/gobgp/v4/pkg/config"
+	"github.com/osrg/gobgp/v4/pkg/server"
 )
 
 var (
@@ -63,7 +63,7 @@ func NewBGPHandler(config *config.BGP) (*BGPHandler, error) {
 		&api.AsPathAttribute{
 			Segments: []*api.AsSegment{
 				{
-					Type:    api.AsSegment_AS_SEQUENCE,
+					Type:    api.AsSegment_TYPE_AS_SEQUENCE,
 					Numbers: []uint32{uint32(config.Asn)},
 				},
 			},
@@ -79,7 +79,7 @@ func NewBGPHandler(config *config.BGP) (*BGPHandler, error) {
 		attributes = append(attributes, attr)
 	}
 
-	var opts = []server.ServerOption{server.LoggerOption(bgpLogger{})}
+	var opts = []server.ServerOption{}
 	if config.EnableGRPC {
 		maxSize := 256 << 20
 		grpcOpts := []grpc.ServerOption{grpc.MaxRecvMsgSize(maxSize), grpc.MaxSendMsgSize(maxSize)}
@@ -142,7 +142,7 @@ func (bgph *BGPHandler) Start() error {
 
 	// monitor the change of the peer state
 	if err := s.WatchEvent(context.Background(), &api.WatchEventRequest{Peer: &api.WatchEventRequest_Peer{}}, func(r *api.WatchEventResponse) {
-		if p := r.GetPeer(); p != nil && p.Type == api.WatchEventResponse_PeerEvent_STATE {
+		if p := r.GetPeer(); p != nil && p.Type == api.WatchEventResponse_PeerEvent_TYPE_STATE {
 			log.Printf("[DEBUG] bgp event: %#v", p)
 		}
 	}); err != nil {
@@ -181,7 +181,7 @@ func (bgph *BGPHandler) setPolicies() error {
 	err := bgph.server.SetPolicies(context.Background(), &api.SetPoliciesRequest{
 		DefinedSets: []*api.DefinedSet{
 			{
-				DefinedType: api.DefinedType_NEIGHBOR,
+				DefinedType: api.DefinedType_DEFINED_TYPE_NEIGHBOR,
 				Name:        matchAnyPeer,
 				List:        []string{"0.0.0.0/0", "::/0"},
 			},
@@ -198,7 +198,7 @@ func (bgph *BGPHandler) setPolicies() error {
 							},
 						},
 						Actions: &api.Actions{
-							RouteAction: api.RouteAction_REJECT,
+							RouteAction: api.RouteAction_ROUTE_ACTION_REJECT,
 						},
 					},
 				},
@@ -213,7 +213,7 @@ func (bgph *BGPHandler) setPolicies() error {
 	return bgph.server.SetPolicyAssignment(context.Background(), &api.SetPolicyAssignmentRequest{
 		Assignment: &api.PolicyAssignment{
 			Name:      globalTable, // this is the global rib
-			Direction: api.PolicyDirection_IMPORT,
+			Direction: api.PolicyDirection_POLICY_DIRECTION_IMPORT,
 			Policies: []*api.Policy{
 				{
 					Name: denyAllNeighbors,
@@ -221,7 +221,7 @@ func (bgph *BGPHandler) setPolicies() error {
 			},
 			// Need to set default action to accept here because otherwise
 			// even routes added via API calls get rejected.
-			DefaultAction: api.RouteAction_ACCEPT,
+			DefaultAction: api.RouteAction_ROUTE_ACTION_ACCEPT,
 		},
 	})
 }
@@ -336,7 +336,7 @@ func (bgph *BGPHandler) DeleteRoutes(ctx context.Context, routes []string) error
 			Prefix:    ipnet.IP.String(),
 		})
 		err = bgph.server.DeletePath(ctx, &api.DeletePathRequest{
-			TableType: api.TableType_GLOBAL,
+			TableType: api.TableType_TABLE_TYPE_GLOBAL,
 			Path: &api.Path{
 				Nlri: nlri,
 				Family: &api.Family{

@@ -7,7 +7,7 @@ import (
 	"context"
 	"encoding/json"
 	"github.com/fabiolb/fabio/config"
-	api "github.com/osrg/gobgp/v3/api"
+	api "github.com/osrg/gobgp/v4/api"
 	"os"
 	"os/exec"
 	"path/filepath"
