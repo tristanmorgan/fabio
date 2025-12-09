@@ -8,7 +8,9 @@ import (
 	"fmt"
 	"log"
 	"net"
+	"net/netip"
 	"os"
+	"time"
 
 	"github.com/fabiolb/fabio/config"
 	"github.com/fabiolb/fabio/exit"
@@ -18,9 +20,11 @@ import (
 	"google.golang.org/protobuf/proto"
 	apb "google.golang.org/protobuf/types/known/anypb"
 
-	api "github.com/osrg/gobgp/v3/api"
-	bgpconfig "github.com/osrg/gobgp/v3/pkg/config"
-	"github.com/osrg/gobgp/v3/pkg/server"
+	api "github.com/osrg/gobgp/v4/api"
+	apiutil "github.com/osrg/gobgp/v4/pkg/apiutil"
+	bgpconfig "github.com/osrg/gobgp/v4/pkg/config"
+	"github.com/osrg/gobgp/v4/pkg/packet/bgp"
+	"github.com/osrg/gobgp/v4/pkg/server"
 )
 
 var (
@@ -62,7 +66,7 @@ func NewBGPHandler(config *config.BGP) (*BGPHandler, error) {
 		&api.AsPathAttribute{
 			Segments: []*api.AsSegment{
 				{
-					Type:    api.AsSegment_AS_SEQUENCE,
+					Type:    api.AsSegment_TYPE_AS_SEQUENCE,
 					Numbers: []uint32{uint32(config.Asn)},
 				},
 			},
@@ -78,7 +82,7 @@ func NewBGPHandler(config *config.BGP) (*BGPHandler, error) {
 		attributes = append(attributes, attr)
 	}
 
-	var opts = []server.ServerOption{server.LoggerOption(bgpLogger{})}
+	var opts = []server.ServerOption{}
 	if config.EnableGRPC {
 		maxSize := 256 << 20
 		grpcOpts := []grpc.ServerOption{grpc.MaxRecvMsgSize(maxSize), grpc.MaxSendMsgSize(maxSize)}
@@ -140,11 +144,12 @@ func (bgph *BGPHandler) Start() error {
 	})
 
 	// monitor the change of the peer state
-	if err := s.WatchEvent(context.Background(), &api.WatchEventRequest{Peer: &api.WatchEventRequest_Peer{}}, func(r *api.WatchEventResponse) {
-		if p := r.GetPeer(); p != nil && p.Type == api.WatchEventResponse_PeerEvent_STATE {
-			log.Printf("[DEBUG] bgp event: %#v", p)
-		}
-	}); err != nil {
+	if err := s.WatchEvent(context.Background(), server.WatchEventMessageCallbacks{
+		OnPeerUpdate: func(p *apiutil.WatchEventMessage_PeerEvent, _ time.Time) {
+			if p.Type == apiutil.PEER_EVENT_STATE {
+				log.Printf("[DEBUG] bgp event: %#v", p)
+			}
+		}}); err != nil {
 		log.Printf("[ERROR] bgp watcher failed: %s", err)
 	}
 	if len(bgph.config.GOBGPDCfgFile) == 0 || len(bgph.config.Peers) > 0 {
@@ -180,7 +185,7 @@ func (bgph *BGPHandler) setPolicies() error {
 	err := bgph.server.SetPolicies(context.Background(), &api.SetPoliciesRequest{
 		DefinedSets: []*api.DefinedSet{
 			{
-				DefinedType: api.DefinedType_NEIGHBOR,
+				DefinedType: api.DefinedType_DEFINED_TYPE_NEIGHBOR,
 				Name:        matchAnyPeer,
 				List:        []string{"0.0.0.0/0", "::/0"},
 			},
@@ -197,7 +202,7 @@ func (bgph *BGPHandler) setPolicies() error {
 							},
 						},
 						Actions: &api.Actions{
-							RouteAction: api.RouteAction_REJECT,
+							RouteAction: api.RouteAction_ROUTE_ACTION_REJECT,
 						},
 					},
 				},
@@ -212,7 +217,7 @@ func (bgph *BGPHandler) setPolicies() error {
 	return bgph.server.SetPolicyAssignment(context.Background(), &api.SetPolicyAssignmentRequest{
 		Assignment: &api.PolicyAssignment{
 			Name:      globalTable, // this is the global rib
-			Direction: api.PolicyDirection_IMPORT,
+			Direction: api.PolicyDirection_POLICY_DIRECTION_IMPORT,
 			Policies: []*api.Policy{
 				{
 					Name: denyAllNeighbors,
@@ -220,7 +225,7 @@ func (bgph *BGPHandler) setPolicies() error {
 			},
 			// Need to set default action to accept here because otherwise
 			// even routes added via API calls get rejected.
-			DefaultAction: api.RouteAction_ACCEPT,
+			DefaultAction: api.RouteAction_ROUTE_ACTION_ACCEPT,
 		},
 	})
 }
@@ -283,22 +288,16 @@ func (bgph *BGPHandler) AddRoutes(ctx context.Context, routes []string) error {
 			errs = append(errs, err)
 			continue
 		}
-		prefixLen, _ := ipnet.Mask.Size()
-		af := api.Family_AFI_IP
+		af := bgp.AFI_IP
 		if ipnet.IP.To4() == nil {
-			af = api.Family_AFI_IP6
+			af = bgp.AFI_IP6
 		}
-		nlri, _ := apb.New(&api.IPAddressPrefix{
-			PrefixLen: uint32(prefixLen),
-			Prefix:    ipnet.IP.String(),
-		})
-		_, err = bgph.server.AddPath(ctx, &api.AddPathRequest{
-			Path: &api.Path{
-				Nlri:   nlri,
-				Pattrs: bgph.routeAttrs,
-				Family: &api.Family{
-					Afi:  af,
-					Safi: api.Family_SAFI_UNICAST,
+		nlri, _ := bgp.NewIPAddrPrefix(netip.MustParsePrefix(addr))
+		_, err = bgph.server.AddPath(apiutil.AddPathRequest{
+			Paths: []*apiutil.Path{
+				{
+					Nlri:   nlri,
+					Family: bgp.NewFamily(uint16(af), bgp.SAFI_UNICAST),
 				},
 			},
 		})
@@ -325,24 +324,18 @@ func (bgph *BGPHandler) DeleteRoutes(ctx context.Context, routes []string) error
 			errs = append(errs, err)
 			continue
 		}
-		prefixLen, _ := ipnet.Mask.Size()
-		af := api.Family_AFI_IP
+		af := bgp.AFI_IP
 		if ipnet.IP.To4() == nil {
-			af = api.Family_AFI_IP6
+			af = bgp.AFI_IP6
 		}
-		nlri, _ := apb.New(&api.IPAddressPrefix{
-			PrefixLen: uint32(prefixLen),
-			Prefix:    ipnet.IP.String(),
-		})
-		err = bgph.server.DeletePath(ctx, &api.DeletePathRequest{
-			TableType: api.TableType_GLOBAL,
-			Path: &api.Path{
-				Nlri: nlri,
-				Family: &api.Family{
-					Afi:  af,
-					Safi: api.Family_SAFI_UNICAST,
+		nlri, _ := bgp.NewIPAddrPrefix(netip.MustParsePrefix(addr))
+		err = bgph.server.DeletePath(apiutil.DeletePathRequest{
+			VRFID: "",
+			Paths: []*apiutil.Path{
+				{
+					Nlri:   nlri,
+					Family: bgp.NewFamily(uint16(af), bgp.SAFI_UNICAST),
 				},
-				Pattrs: bgph.routeAttrs,
 			},
 		})
 		if err != nil {
