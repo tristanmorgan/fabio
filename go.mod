@@ -14,7 +14,7 @@ require (
 	github.com/inetaf/tcpproxy v0.0.0-20250222171855-c4b9df066048
 	github.com/magiconair/properties v1.8.10
 	github.com/mwitkow/grpc-proxy v0.0.0-20250813121105-2866842de9a5
-	github.com/osrg/gobgp/v4 v4.0.0
+	github.com/osrg/gobgp/v4 v4.5.0
 	github.com/pascaldekloe/goe v0.1.1
 	github.com/pires/go-proxyproto v0.12.0
 	github.com/pkg/profile v1.7.0
@@ -41,6 +41,7 @@ require (
 	github.com/fatih/color v1.19.0 // indirect
 	github.com/felixge/fgprof v0.9.5 // indirect
 	github.com/fsnotify/fsnotify v1.9.0 // indirect
+	github.com/gaissmai/bart v0.26.1 // indirect
 	github.com/go-jose/go-jose/v4 v4.1.4 // indirect
 	github.com/go-logfmt/logfmt v0.6.1 // indirect
 	github.com/go-viper/mapstructure/v2 v2.5.0 // indirect
