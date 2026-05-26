@@ -341,7 +341,7 @@ func startServers(cfg *config.Config, stats metrics.Provider) {
 			Connect: stats.NewCounter("grpc.conn"),
 			Request: stats.NewHistogram("grpc.requests"),
 			NoRoute: stats.NewCounter("grpc.noroute"),
-			Status:  stats.NewHistogram("grep.status", "code"),
+			Status:  stats.NewHistogram("grpc.status", "code"),
 		}
 	}
 
