@@ -236,7 +236,6 @@ type grpcConnectionPool struct {
 func newGrpcConnectionPool(tlscfg *tls.Config, cfg *config.Config) *grpcConnectionPool {
 	cp := &grpcConnectionPool{
 		connections:     make(map[string]*grpc.ClientConn),
-		lock:            sync.RWMutex{},
 		cleanupInterval: time.Second * 5,
 		tlscfg:          tlscfg,
 		cfg:             cfg,
