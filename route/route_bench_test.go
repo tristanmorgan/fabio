@@ -154,7 +154,7 @@ func makeRequests(t Table) []*http.Request {
 func benchmarkGet(t Table, match matcher, pick picker, pb *testing.PB) {
 	reqs := makeRequests(t)
 	k, n := len(reqs), 0
-	//Glob Matching True
+	// Glob matching enabled.
 	for pb.Next() {
 		t.Lookup(reqs[n%k], pick, match, globCache, globEnabled)
 		n++
