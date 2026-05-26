@@ -33,7 +33,7 @@ var echoHandler tcp.HandlerFunc = func(c net.Conn) error {
 
 // TestTCPDynamicProxy tests proxying an unencrypted TCP connection
 // to a TCP upstream server.
-func TestTCPDyanmicProxy(t *testing.T) {
+func TestTCPDynamicProxy(t *testing.T) {
 	srv := tcptest.NewServer(echoHandler)
 	defer srv.Close()
 
