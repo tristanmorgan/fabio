@@ -53,7 +53,6 @@ linters:
     - godox
     - gomodguard
     - gosec
-    - govet
     - ireturn
     - lll
     - maintidx
@@ -70,11 +69,11 @@ linters:
     - prealloc
     - protogetter
     - revive
+    - staticcheck
     - tagliatelle
     - testpackage
     - thelper
     - usestdlibvars
-    - usetesting
     - varnamelen
     - whitespace
     - wrapcheck
