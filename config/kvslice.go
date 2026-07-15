@@ -133,10 +133,6 @@ const (
 	itemError     itemType = "ERROR"
 )
 
-func (t itemType) String() string {
-	return string(t)
-}
-
 type state string
 
 const (
