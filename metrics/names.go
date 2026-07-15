@@ -35,10 +35,6 @@ func init() {
 	}
 }
 
-func (s Service) String() string {
-	return s.Service
-}
-
 const DotSeparator = "."
 const PipeSeparator = "|"
 const RoutePrefix = "route"
