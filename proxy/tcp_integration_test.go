@@ -31,6 +31,15 @@ var echoHandler tcp.HandlerFunc = func(c net.Conn) error {
 	return err
 }
 
+func Close() {
+	mu.Lock()
+	for _, srv := range servers {
+		srv.Close()
+	}
+	servers = make(map[string]Server)
+	mu.Unlock()
+}
+
 // TestTCPDynamicProxy tests proxying an unencrypted TCP connection
 // to a TCP upstream server.
 func TestTCPDynamicProxy(t *testing.T) {
