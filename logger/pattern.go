@@ -377,18 +377,6 @@ const (
 	itemHeader
 )
 
-func (t itemType) String() string {
-	switch t {
-	case itemText:
-		return "TEXT"
-	case itemField:
-		return "FIELD"
-	case itemHeader:
-		return "HEADER"
-	}
-	panic("invalid")
-}
-
 type state int
 
 const (
