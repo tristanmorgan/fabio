@@ -48,15 +48,6 @@ func CloseProxy(address string) error {
 	return nil
 }
 
-func Close() {
-	mu.Lock()
-	for _, srv := range servers {
-		srv.Close()
-	}
-	servers = make(map[string]Server)
-	mu.Unlock()
-}
-
 func Shutdown(timeout time.Duration) {
 	mu.Lock()
 	srvs := make(map[string]Server, len(servers))
