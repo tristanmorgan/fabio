@@ -55,6 +55,9 @@ type HTTPProxy struct {
 	// self-signed certs.
 	InsecureTransport http.RoundTripper
 
+	// Logger is the access logger for the requests.
+	Logger logger.Logger
+
 	// Time returns the current time as the number of seconds since the epoch.
 	// If Time is nil, time.Now is used.
 	Time func() time.Time
@@ -63,9 +66,6 @@ type HTTPProxy struct {
 	// The proxy will panic if this value is nil.
 	Lookup func(*http.Request) *route.Target
 
-	// Logger is the access logger for the requests.
-	Logger logger.Logger
-
 	// UUID returns a unique id in uuid format.
 	// If UUID is nil, uuid.NewUUID() is used.
 	UUID func() string
@@ -73,11 +73,11 @@ type HTTPProxy struct {
 	// Auth schemes registered with the server
 	AuthSchemes map[string]auth.AuthScheme
 
-	// Config is the proxy configuration as provided during startup.
-	Config config.Proxy
-
 	// ProtectHeaders is a map of headers to protect against client side manipulation
 	ProtectHeaders map[string]bool
+
+	// Config is the proxy configuration as provided during startup.
+	Config config.Proxy
 }
 
 func (p *HTTPProxy) ServeHTTP(w http.ResponseWriter, r *http.Request) {
