@@ -1,7 +1,6 @@
 package file
 
 import (
-	"io/ioutil"
 	"log"
 	"os"
 	"time"
@@ -26,7 +25,7 @@ func readFile(file *filedata) error {
 
 	lastmtime := finfo.ModTime()
 	if file.mtime != lastmtime {
-		data, err := ioutil.ReadFile(file.path)
+		data, err := os.ReadFile(file.path)
 		if err != nil {
 			log.Println("[ERROR] Cannot read file data from ", file.path)
 			return err
