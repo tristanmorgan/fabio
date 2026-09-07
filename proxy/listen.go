@@ -10,6 +10,13 @@ import (
 	proxyproto "github.com/pires/go-proxyproto"
 )
 
+func init() {
+	// go-proxyproto v0.15.0 changed DefaultPolicy from USE to REQUIRE.
+	// Fabio's pxyproto listener option is opt-in, so connections without a
+	// PROXY header must still be accepted (USE semantics).
+	proxyproto.DefaultPolicy = proxyproto.USE
+}
+
 func ListenTCP(l config.Listen, cfg *tls.Config) (net.Listener, error) {
 	addr, err := net.ResolveTCPAddr("tcp", l.Addr)
 	if err != nil {
