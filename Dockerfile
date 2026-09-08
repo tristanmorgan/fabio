@@ -6,7 +6,7 @@ RUN apk update && apk add --no-cache git ca-certificates libcap
 WORKDIR /src
 COPY . .
 RUN go mod tidy
-RUN CGO_ENABLED=0 GOOS=linux GOARCH=${TARGETARCH} go build -trimpath -ldflags "-s -w"
+RUN CGO_ENABLED=0 GOOS=linux GOARCH=${TARGETARCH} go build -tags hashicorpmetrics -trimpath -ldflags "-s -w"
 RUN setcap cap_net_bind_service=+ep /src/fabio
 RUN echo "nobody:x:65534:65534:nobody:/:/sbin/nologin" > /passwd
 RUN echo "nogroup:x:65533:" > /group
