@@ -1,6 +1,7 @@
 FROM debian:stable-slim AS build
+ARG TARGETPLATFORM
 RUN apt-get update && apt-get install -y git ca-certificates libcap2-bin
-ADD fabio /usr/bin/
+ADD $TARGETPLATFORM/fabio /usr/bin/
 RUN setcap CAP_NET_BIND_SERVICE=+eip /usr/bin/fabio
 RUN echo "nobody:x:65534:65534:nobody:/:/sbin/nologin" > /passwd
 RUN echo "nogroup:x:65533:" > /group
